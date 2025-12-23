@@ -2,13 +2,61 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>FN</title>
+    <title>  </title>
     <!-- 新增这行：让手机端适配屏幕宽度 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 圣诞字幕动画样式 */
+        .christmas-text {
+            position: fixed; /* 固定在页面顶层 */
+            top: 20%; /* 垂直居中偏上，圣诞感更足 */
+            left: 50%; /* 水平居中 */
+            transform: translate(-50%, -50%); /* 精准居中 */
+            font-size: 20px; /* 初始大小 */
+            color: #E63946; /* 圣诞红 */
+            font-weight: bold; /* 加粗 */
+            text-shadow: 0 0 10px #FFD700; /* 金色光晕，圣诞氛围 */
+            /* 动画：名称 时长 线性 无限循环 */
+            animation: christmasAnimation 8s linear infinite;
+            z-index: 9999; /* 确保在最顶层，不被图片遮挡 */
+        }
+
+        /* 定义动画关键帧：渐隐出现→变大→渐隐消失 */
+        @keyframes christmasAnimation {
+            0% {
+                opacity: 0; /* 完全透明（开始） */
+                font-size: 20px; /* 初始小尺寸 */
+            }
+            25% {
+                opacity: 1; /* 完全显示 */
+                font-size: 80px; /* 最大尺寸（电脑端） */
+            }
+            50% {
+                opacity: 1; /* 保持显示 */
+                font-size: 80px;
+            }
+            100% {
+                opacity: 0; /* 完全透明（结束） */
+                font-size: 110px; /* 最后变大消失 */
+            }
+        }
+
+        /* 手机端适配：缩小最大字体，避免溢出 */
+        @media (max-width: 768px) {
+            @keyframes christmasAnimation {
+                25% { font-size: 40px; }
+                50% { font-size: 40px; }
+                100% { font-size: 60px; }
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- 圣诞字幕（顶层显示） -->
+    <div class="christmas-text">Happy Christmas</div>
+
     <!-- 给 h1 加居中样式 -->
-    <h1 style="text-align: center;">FN</h1>
+    <h1 style="text-align: center; margin-top: 180px;">  </h1>
     <!-- 用div包裹图片，设置居中 -->
     <div align="center">
              <!-- 设置图片宽高：单位是像素（px） -->
@@ -18,4 +66,3 @@
     </div>
 </body>
 </html>
-
