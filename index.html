@@ -2,59 +2,64 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>  </title>
-    <!-- 新增这行：让手机端适配屏幕宽度 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FN</title>
+    <!-- 核心适配：让网页跟随设备宽度，禁止用户缩放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        /* 圣诞字幕动画样式 */
-        .christmas-text {
-            position: fixed; /* 固定在页面顶层 */
-            top: 20%; /* 垂直居中偏上，圣诞感更足 */
-            left: 50%; /* 水平居中 */
-            transform: translate(-50%, -50%); /* 精准居中 */
-            font-size: 20px; /* 初始大小 */
-            color: #E63946; /* 圣诞红 */
-            font-weight: bold; /* 加粗 */
-            text-shadow: 0 0 10px #FFD700; /* 金色光晕，圣诞氛围 */
-            /* 动画：名称 时长 线性 无限循环 */
-            animation: christmasAnimation 8s linear infinite;
-            z-index: 9999; /* 确保在最顶层，不被图片遮挡 */
+        /* 全局样式：清除默认间距，让页面更整洁 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        /* 定义动画关键帧：渐隐出现→变大→渐隐消失 */
-        @keyframes christmasAnimation {
-            0% {
-                opacity: 0; /* 完全透明（开始） */
-                font-size: 20px; /* 初始小尺寸 */
+        body {
+            padding: 20px 0; /* 页面上下留少量间距 */
+        }
+        /* 标题自适应 */
+        h1 {
+            text-align: center;
+            margin-bottom: 20px; /* 标题和图片留间距 */
+            font-size: clamp(24px, 5vw, 40px); /* 字体大小：手机24px → 电脑40px 自动过渡 */
+            color: #333;
+        }
+        /* 图片容器：居中，适配所有屏幕 */
+        .image-container {
+            width: 90%; /* 占屏幕宽度的90%，两边留边 */
+            margin: 0 auto; /* 水平居中 */
+            display: flex;
+            flex-direction: column; /* 手机竖屏：图片上下排列 */
+            gap: 20px; /* 图片之间的间距（替代margin，更灵活） */
+            align-items: center; /* 图片在容器里居中 */
+        }
+        /* 图片自适应核心样式 */
+        .image-container img {
+            width: 100%; /* 占容器100%宽度 → 自动适配屏幕 */
+            max-width: 920px; /* 电脑宽屏最大宽度不超过920px，避免太宽 */
+            border: clamp(8px, 2vw, 22px) solid #ccc; /* 边框：手机8px → 电脑22px 自动过渡 */
+            border-radius: 8px; /* 可选：加一点点圆角，更美观 */
+            object-fit: contain; /* 强制保留图片原始比例，绝不变形 */
+        }
+        /* 电脑宽屏优化：如果屏幕够宽，图片可以横向排列（可选） */
+        @media (min-width: 1200px) {
+            .image-container {
+                flex-direction: row; /* 电脑宽屏：图片左右排列 */
+                justify-content: center; /* 横向排列时居中 */
+                flex-wrap: wrap; /* 屏幕不够宽时自动换行 */
             }
-            25% {
-                opacity: 1; /* 完全显示 */
-                font-size: 80px; /* 最大尺寸（电脑端） */
-            }
-            50% {
-                opacity: 1; /* 保持显示 */
-                font-size: 80px;
-            }
-            100% {
-                opacity: 0; /* 完全透明（结束） */
-                font-size: 110px; /* 最后变大消失 */
+            .image-container img {
+                width: 30%; /* 电脑上每张图占30%宽度，留间距 */
+                max-width: 400px; /* 电脑上单张图最大宽度 */
             }
         }
     </style>
 </head>
 <body>
-    <!-- 圣诞字幕（顶层显示） -->
-    <div class="christmas-text">Happy Christmas</div>
-
-    <!-- 给 h1 加居中样式 -->
-    <h1 style="text-align: center; margin-top: 180px;">  </h1>
-    <!-- 用div包裹图片，设置居中 -->
-    <div align="center">
-             <!-- 设置图片宽高：单位是像素（px） -->
-             <img src="FNCardFront.png" alt="图片1" width="920" style="margin: 0 100px; border: 22px solid #ccc;">
-             <img src="FNCardBack.png" alt="图片2" width="920" style="margin: 0 100px; border: 22px solid #ccc;">
-             <img src="Original.jpg" alt="图片3" width="920" style="margin: 0 100px; border: 22px solid #ccc;">
+    <h1>FN</h1>
+    <!-- 图片容器：用class统一控制样式，更简洁 -->
+    <div class="image-container">
+        <img src="FNCardFront.png" alt="图片1">
+        <img src="FNCardBack.png" alt="图片2">
+        <img src="Original.jpg" alt="图片3">
     </div>
 </body>
 </html>
-
