@@ -3,63 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <title>FN</title>
-    <!-- 核心适配：让网页跟随设备宽度，禁止用户缩放 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        /* 全局样式：清除默认间距，让页面更整洁 */
+        /* 全局样式重置 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         body {
-            padding: 20px 0; /* 页面上下留少量间距 */
+            padding: 20px 0;
+            overflow-x: hidden; /* 防止字幕超出屏幕横向滚动 */
+            min-height: 100vh; /* 保证页面高度铺满屏幕 */
+            position: relative; /* 作为字幕绝对定位的参考 */
         }
         /* 标题自适应 */
         h1 {
             text-align: center;
-            margin-bottom: 20px; /* 标题和图片留间距 */
-            font-size: clamp(24px, 5vw, 40px); /* 字体大小：手机24px → 电脑40px 自动过渡 */
+            margin-bottom: 20px;
+            font-size: clamp(24px, 5vw, 40px);
             color: #333;
+            position: relative;
+            z-index: 1; /* 保证标题在字幕上层（可选） */
         }
-        /* 图片容器：居中，适配所有屏幕 */
+        /* 图片容器自适应 */
         .image-container {
-            width: 90%; /* 占屏幕宽度的90%，两边留边 */
-            margin: 0 auto; /* 水平居中 */
+            width: 90%;
+            margin: 0 auto;
             display: flex;
-            flex-direction: column; /* 手机竖屏：图片上下排列 */
-            gap: 20px; /* 图片之间的间距（替代margin，更灵活） */
-            align-items: center; /* 图片在容器里居中 */
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            position: relative;
+            z-index: 1; /* 图片在字幕上层 */
         }
-        /* 图片自适应核心样式 */
         .image-container img {
-            width: 100%; /* 占容器100%宽度 → 自动适配屏幕 */
-            max-width: 920px; /* 电脑宽屏最大宽度不超过920px，避免太宽 */
-            border: clamp(8px, 2vw, 22px) solid #ccc; /* 边框：手机8px → 电脑22px 自动过渡 */
-            border-radius: 8px; /* 可选：加一点点圆角，更美观 */
-            object-fit: contain; /* 强制保留图片原始比例，绝不变形 */
+            width: 100%;
+            max-width: 920px;
+            border: clamp(8px, 2vw, 22px) solid #ccc;
+            border-radius: 8px;
+            object-fit: contain;
         }
-        /* 电脑宽屏优化：如果屏幕够宽，图片可以横向排列（可选） */
+        /* 电脑宽屏图片横向排列 */
         @media (min-width: 1200px) {
             .image-container {
-                flex-direction: row; /* 电脑宽屏：图片左右排列 */
-                justify-content: center; /* 横向排列时居中 */
-                flex-wrap: wrap; /* 屏幕不够宽时自动换行 */
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
             }
             .image-container img {
-                width: 30%; /* 电脑上每张图占30%宽度，留间距 */
-                max-width: 400px; /* 电脑上单张图最大宽度 */
+                width: 30%;
+                max-width: 400px;
             }
+        }
+        /* 圣诞字幕样式（基础） */
+        .christmas-text {
+            position: absolute;
+            top: -50px; /* 初始在屏幕顶部外 */
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 0 5px #000; /* 加阴影更醒目 */
+            pointer-events: none; /* 防止遮挡图片点击（可选） */
+            z-index: 9999; /* 字幕在图片/标题下层，不遮挡内容 */
+            animation-fill-mode: forwards; /* 动画结束后保持最后状态 */
         }
     </style>
 </head>
 <body>
     <h1>FN</h1>
-    <!-- 图片容器：用class统一控制样式，更简洁 -->
     <div class="image-container">
         <img src="FNCardFront.png" alt="图片1">
         <img src="FNCardBack.png" alt="图片2">
         <img src="Original.jpg" alt="图片3">
     </div>
+
+    <script>
+        // 圣诞字幕核心逻辑：随机位置/大小/速度/颜色，下落3轮
+        const config = {
+            text: "Happy Christmas", // 字幕内容
+            totalRounds: 3, // 总共下落3轮
+            textsPerRound: 8, // 每轮生成8个字幕（可调整）
+            screenHeight: window.innerHeight, // 屏幕高度
+            screenWidth: window.innerWidth, // 屏幕宽度
+            colors: [ // 圣诞色系随机选
+                "#E63946", "#2A9D8F", "#FFD700", "#F4A261", "#E9C46A", "#264653", "#F2E8CF"
+            ]
+        };
+
+        // 生成随机数的工具函数
+        function getRandom(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // 生成单个下落字幕
+        function createFallingText(roundIndex) {
+            const textEl = document.createElement("div");
+            textEl.className = "christmas-text";
+            textEl.textContent = config.text;
+
+            // 1. 随机位置（横向）
+            const randomLeft = getRandom(0, config.screenWidth - 100);
+            textEl.style.left = `${randomLeft}px`;
+
+            // 2. 随机大小（16px ~ 60px）
+            const randomSize = getRandom(16, 60);
+            textEl.style.fontSize = `${randomSize}px`;
+
+            // 3. 随机颜色（从圣诞色系里选）
+            const randomColor = config.colors[Math.floor(getRandom(0, config.colors.length))];
+            textEl.style.color = randomColor;
+
+            // 4. 随机下落速度（3s ~ 8s）
+            const randomDuration = getRandom(3, 8);
+            // 动画：从顶部落下→超出屏幕底部消失
+            textEl.style.animation = `fall ${randomDuration}s linear forwards`;
+
+            // 定义下落动画（动态适配屏幕高度）
+            const style = document.createElement("style");
+            style.textContent = `
+                @keyframes fall {
+                    0% { transform: translateY(0); opacity: 1; }
+                    90% { opacity: 0.8; }
+                    100% { transform: translateY(${config.screenHeight + 100}px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 添加到页面
+            document.body.appendChild(textEl);
+
+            // 动画结束后删除元素，避免占用内存
+            setTimeout(() => {
+                textEl.remove();
+                style.remove();
+            }, randomDuration * 1000);
+        }
+
+        // 执行3轮下落（每轮间隔1s）
+        async function startFallingAnimation() {
+            for (let round = 0; round < config.totalRounds; round++) {
+                // 每轮生成多个字幕（间隔随机时间）
+                for (let i = 0; i < config.textsPerRound; i++) {
+                    setTimeout(() => createFallingText(round), getRandom(0, 1000));
+                }
+                // 轮次之间间隔2s（可调整）
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+        }
+
+        // 页面加载完成后启动动画
+        window.onload = startFallingAnimation;
+
+        // 适配窗口大小变化（比如手机旋转）
+        window.onresize = function() {
+            config.screenHeight = window.innerHeight;
+            config.screenWidth = window.innerWidth;
+        };
+    </script>
 </body>
 </html>
