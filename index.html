@@ -41,43 +41,35 @@
     }
     /* 圣诞文字动画样式（最顶层） */
     #christmas-text {
-        /* 1. 绝对定位：基于父容器#image-container，而非屏幕 */
         position: absolute; 
-        /* 2. 用百分比定位（核心！px会因屏幕分辨率偏差，%基于容器尺寸，跨设备一致） */
-        top: 32%;    /* 示例：容器内顶部2%位置（可改，比如5%） */
-        left: 35%;   /* 示例：容器内左侧2%位置（可改，比如5%） */
-        /* 3. 移除translate偏移（避免叠加偏移导致位置偏差） */
-        transform: none; 
-        /* 4. 缩放原点仍保留，不影响位置，只影响动画缩放 */
+        top: 50%;    /* 示例：容器内顶部2%位置（可改，比如5%） */
+        left: 50%;   /* 示例：容器内左侧2%位置（可改，比如5%） */
+        /* 语法：translate(X偏移, Y偏移) —— 百分比是相对文字自身，px是固定像素（推荐用%） */
+        transform: translate(-50%, -50%) scale(0.5);  
         transform-origin: center; 
         /* 其他样式（动画、颜色、层级等）完全保留 */
-        animation: fadeInScaleFadeOut 10s ease-in-out infinite;
+        animation: fadeInScaleFadeOut 10s ease-in-out infinite !important;
         opacity: 0;
         z-index: 999;
-        font-size: 36px;
-        /* 移动端文字大小适配（只改尺寸，不改位置） */
-        @media (max-width: 768px) {
-          font-size: 24px; /* 仅缩小文字，位置百分比不变 */
-        }
-        color: #FFD700;
-        font-weight: bold;
-        white-space: nowrap;
-        user-select: none;
+        /* 图片专属样式 */
+        width: auto;
+        height: auto;
+        max-width: 200px;
     }
     
     /* 定义渐隐入+由小变大+渐隐出的关键帧动画 */
     @keyframes fadeInScaleFadeOut {
       0% {
         opacity: 0; /* 初始状态：完全透明（渐隐入准备） */
-        transform: translate(0%, 0%) scale(0.6); /* 初始大小：50%（由小变大准备） */
+        transform: translate(-50%, -44%) scale(1.6); /* 初始大小：50%（由小变大准备） */
       }
       50% {
         opacity: 1; /* 中间保持：完全显示 */
-        transform: translate(0%, 0%) scale(1.2); /* 中间保持：原始大小 */
+        transform: translate(-50%, -42%) scale(1.8); /* 中间保持：原始大小 */
       }
       100% {
         opacity: 0; /* 渐隐出完成：完全透明 */
-        transform: translate(0%, 0%) scale(1.6); /* 结束大小：保持原始大小 */
+        transform: translate(-50%, -36%) scale(2.6); /* 结束大小：保持原始大小 */
       }
     }
 
@@ -126,9 +118,13 @@
     <img src="MyCardEnglish002.png" class="editable-img" id="img4" alt="图片4">
     <img src="ChineseSenior.png" class="editable-img" id="img5" alt="图片5">
     <img src="EnglishSenior.png" class="editable-img" id="img6" alt="图片6">
-    
-    <!-- 圣诞文字层（最顶层） -->
-    <div id="christmas-text">Happy Christmas</div>
+
+
+    <img 
+      id="christmas-text" 
+      src="MerryChristmas.png"  <!-- 替换成你的图片路径（本地/网络都可） -->
+      <!--alt="Christmas subtitle" --> 
+      <!--style="width: auto; height: auto; max-width: 200px;"   可选：限制图片最大宽度，避免溢出 -->
   </div>
 
   <!-- 音频元素 -->
@@ -159,23 +155,28 @@
       img5: { zIndex: 5 },
       img6: { zIndex: 6 }
     };
-    // 圣诞文字配置项
-    const christmasConfig = {
-      left: '50%',    
-      top: '50%',     
-      fontSize: '36px',
-      color: '#FFD700'
-    };
 
     // ========== 圣诞文字初始化 ==========
     function initChristmasText() {
       const textEl = document.getElementById('christmas-text');
-      // 删掉以下两行！！！（这是导致位置被覆盖的关键）
-      // textEl.style.left = christmasConfig.left;
-      // textEl.style.top = christmasConfig.top;
-      // 保留其他样式设置（字体、颜色）
-      textEl.style.fontSize = christmasConfig.fontSize;
-      textEl.style.color = christmasConfig.color;
+      // 确保图片加载完成后再应用布局
+      textEl.onload = function() {
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        const originalWidth = textEl.naturalWidth;
+        const originalHeight = textEl.naturalHeight;
+
+        // 计算适配容器的缩放比例
+        const scaleX = containerWidth / originalWidth;
+        const scaleY = containerHeight / originalHeight;
+        const fitScale = Math.min(scaleX, scaleY, 1);
+
+        // 应用缩放（不影响动画的scale）
+        textEl.style.width = `${originalWidth * fitScale}px`;
+        textEl.style.height = `${originalHeight * fitScale}px`;
+      };
+      // 如果图片已加载完成，手动触发onload
+      if (textEl.complete) textEl.onload();
     }
 
     // ========== 核心逻辑：自动适配+左上角基准居中 ==========
