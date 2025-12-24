@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>中央广播电视总台亚太总站香港</title>
   <style>
     * {
@@ -41,7 +41,7 @@
     }
     /* 圣诞文字动画样式（最顶层） */
     #christmas-text {
-      position: fixed; /* 固定位置，可根据需求调整top/left等定位值 */
+      position: absolute; /* 固定位置，可根据需求调整top/left等定位值 */
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%); /* 使元素在固定位置居中 */
@@ -152,8 +152,8 @@
     };
     // 圣诞文字配置项
     const christmasConfig = {
-      left: '42%',    
-      top: '29%',     
+      left: '38%',    
+      top: '33%',     
       fontSize: '36px',
       color: '#FFD700'
     };
