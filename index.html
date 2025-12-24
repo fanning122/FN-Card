@@ -1,164 +1,145 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>FN</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-        /* 全局样式重置 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            padding: 20px 0;
-            overflow-x: hidden; /* 防止字幕超出屏幕横向滚动 */
-            min-height: 100vh; /* 保证页面高度铺满屏幕 */
-            position: relative; /* 作为字幕绝对定位的参考 */
-        }
-        /* 标题自适应 */
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: clamp(24px, 5vw, 40px);
-            color: #333;
-            position: relative;
-            z-index: 1; /* 保证标题在字幕上层（可选） */
-        }
-        /* 图片容器自适应 */
-        .image-container {
-            width: 90%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-            position: relative;
-            z-index: 1; /* 图片在字幕上层 */
-        }
-        .image-container img {
-            width: 100%;
-            max-width: 920px;
-            border: clamp(8px, 2vw, 22px) solid #ccc;
-            border-radius: 8px;
-            object-fit: contain;
-        }
-        /* 电脑宽屏图片横向排列 */
-        @media (min-width: 1200px) {
-            .image-container {
-                flex-direction: row;
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            .image-container img {
-                width: 30%;
-                max-width: 400px;
-            }
-        }
-        /* 圣诞字幕样式（基础） */
-        .christmas-text {
-            position: absolute;
-            top: -50px; /* 初始在屏幕顶部外 */
-            color: #fff;
-            font-weight: bold;
-            text-shadow: 0 0 5px #000; /* 加阴影更醒目 */
-            pointer-events: none; /* 防止遮挡图片点击（可选） */
-            z-index: 9999; /* 字幕在图片/标题下层，不遮挡内容 */
-            animation-fill-mode: forwards; /* 动画结束后保持最后状态 */
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>纯配置化图片排版</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    /* 容器：适配横竖屏，作为图片排版基准 */
+    #image-container {
+      position: relative;
+      width: 100%;
+      height: 80vh;
+      border: 2px dashed #666;
+      background: #fff;
+      overflow: hidden;
+      /* 横竖屏适配 */
+      @media (orientation: landscape) {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      @media (orientation: portrait) {
+        height: 90vh;
+      }
+    }
+    /* 图片样式：仅基础定位，尺寸/位置/层级全由JS配置 */
+    .editable-img {
+      position: absolute;
+      transform-origin: top left; /* 关键：缩放/定位基准为左上角 */
+      user-select: none;
+      /* 移除默认尺寸，完全由JS控制 */
+    }
+  </style>
 </head>
 <body>
-    <h1>FN</h1>
-    <div class="image-container">
-        <img src="FNCardFront.png" alt="图片1">
-        <img src="FNCardBack.png" alt="图片2">
-        <img src="Original.jpg" alt="图片3">
-    </div>
+  <!-- 图片容器 -->
+  <div id="image-container">
+    <!-- 6张图片：仅保留基础结构，配置全在JS里 -->
+    <img src="Myself.png" class="editable-img" id="img1" alt="图片1">
+    <img src="Planing background.png" class="editable-img" id="img2" alt="图片2">
+    <img src="MyCardChinese002.png" class="editable-img" id="img3" alt="图片3">
+    <img src="MyCardEnglish002.png" class="editable-img" id="img4" alt="图片4">
+    <img src="ChineseSenior.png" class="editable-img" id="img5" alt="图片5">
+    <img src="EnglishSenior.png" class="editable-img" id="img6" alt="图片6">
+  </div>
 
-    <script>
-        // 圣诞字幕核心逻辑：随机位置/大小/速度/颜色，下落3轮
-        const config = {
-            text: "Happy Christmas", // 字幕内容
-            totalRounds: 3, // 总共下落3轮
-            textsPerRound: 8, // 每轮生成8个字幕（可调整）
-            screenHeight: window.innerHeight, // 屏幕高度
-            screenWidth: window.innerWidth, // 屏幕宽度
-            colors: [ // 圣诞色系随机选
-                "#E63946", "#2A9D8F", "#FFD700", "#F4A261", "#E9C46A", "#264653", "#F2E8CF"
-            ]
+  <script>
+    // ========== 核心配置区：所有参数可直接修改 ==========
+    const container = document.getElementById('image-container');
+    // 图片配置项：每张图的层级(zIndex)可自定义，其他由逻辑自动计算
+    const imgConfigs = {
+      img1: { zIndex: 1 }, // 层级数字越大，越在顶层
+      img2: { zIndex: 2 },
+      img3: { zIndex: 3 },
+      img4: { zIndex: 4 },
+      img5: { zIndex: 5 },
+      img6: { zIndex: 6 }
+    };
+
+    // ========== 核心逻辑：自动适配+左上角基准居中 ==========
+    // 等待图片加载完成，确保获取原始尺寸
+    function initImages() {
+      const imgElements = document.querySelectorAll('.editable-img');
+      let loadedCount = 0;
+
+      imgElements.forEach(img => {
+        // 监听图片加载完成
+        img.onload = function() {
+          loadedCount++;
+          // 所有图片加载完成后执行排版逻辑
+          if (loadedCount === imgElements.length) {
+            layoutImages(imgElements);
+          }
         };
+        // 兼容图片缓存（已加载的情况）
+        if (img.complete) img.onload();
+      });
+    }
 
-        // 生成随机数的工具函数
-        function getRandom(min, max) {
-            return Math.random() * (max - min) + min;
-        }
+    // 排版核心逻辑：原始尺寸适配+左上角基准居中
+    function layoutImages(imgElements) {
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
 
-        // 生成单个下落字幕
-        function createFallingText(roundIndex) {
-            const textEl = document.createElement("div");
-            textEl.className = "christmas-text";
-            textEl.textContent = config.text;
+      imgElements.forEach(img => {
+        const config = imgConfigs[img.id];
+        
+        // 1. 获取图片原始尺寸（宽/高）
+        const originalWidth = img.naturalWidth;
+        const originalHeight = img.naturalHeight;
 
-            // 1. 随机位置（横向）
-            const randomLeft = getRandom(0, config.screenWidth - 100);
-            textEl.style.left = `${randomLeft}px`;
+        // 2. 自动适配屏幕：计算缩放比例（保证图片完整显示在容器内）
+        const scaleX = containerWidth / originalWidth;
+        const scaleY = containerHeight / originalHeight;
+        const fitScale = Math.min(scaleX, scaleY, 1); // 最大缩放比例不超过1（不放大原始尺寸）
 
-            // 2. 随机大小（16px ~ 60px）
-            const randomSize = getRandom(16, 60);
-            textEl.style.fontSize = `${randomSize}px`;
+        // 3. 设置图片最终尺寸（原始尺寸*适配比例）
+        img.style.width = `${originalWidth * fitScale}px`;
+        img.style.height = `${originalHeight * fitScale}px`;
+        const finalWidth = img.offsetWidth;
+        const finalHeight = img.offsetHeight;
 
-            // 3. 随机颜色（从圣诞色系里选）
-            const randomColor = config.colors[Math.floor(getRandom(0, config.colors.length))];
-            textEl.style.color = randomColor;
+        // 4. 左上角基准居中计算：
+        // 容器中心X - 图片宽度/2 = 图片左上角X
+        // 容器中心Y - 图片高度/2 = 图片左上角Y
+        const left = (containerWidth - finalWidth) / 2;
+        const top = (containerHeight - finalHeight) / 2;
 
-            // 4. 随机下落速度（3s ~ 8s）
-            const randomDuration = getRandom(3, 8);
-            // 动画：从顶部落下→超出屏幕底部消失
-            textEl.style.animation = `fall ${randomDuration}s linear forwards`;
+        // 5. 应用配置：位置+层级
+        img.style.left = `${left}px`;
+        img.style.top = `${top}px`;
+        img.style.zIndex = config.zIndex;
+      });
+    }
 
-            // 定义下落动画（动态适配屏幕高度）
-            const style = document.createElement("style");
-            style.textContent = `
-                @keyframes fall {
-                    0% { transform: translateY(0); opacity: 1; }
-                    90% { opacity: 0.8; }
-                    100% { transform: translateY(${config.screenHeight + 100}px); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
+    // ========== 窗口适配：resize时重新排版 ==========
+    window.addEventListener('resize', () => {
+      initImages(); // 窗口变化时重新计算排版
+    });
 
-            // 添加到页面
-            document.body.appendChild(textEl);
+    // 初始化执行
+    initImages();
 
-            // 动画结束后删除元素，避免占用内存
-            setTimeout(() => {
-                textEl.remove();
-                style.remove();
-            }, randomDuration * 1000);
-        }
+    // ========== 手动修改示例（可直接改这里调整参数） ==========
+    // 示例1：修改单张图片位置（左上角坐标）
+    // document.getElementById('img1').style.left = '100px';
+    // document.getElementById('img1').style.top = '50px';
 
-        // 执行3轮下落（每轮间隔1s）
-        async function startFallingAnimation() {
-            for (let round = 0; round < config.totalRounds; round++) {
-                // 每轮生成多个字幕（间隔随机时间）
-                for (let i = 0; i < config.textsPerRound; i++) {
-                    setTimeout(() => createFallingText(round), getRandom(0, 1000));
-                }
-                // 轮次之间间隔2s（可调整）
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            }
-        }
+    // 示例2：修改单张图片尺寸
+    // document.getElementById('img2').style.width = '300px';
+    // document.getElementById('img2').style.height = '200px';
 
-        // 页面加载完成后启动动画
-        window.onload = startFallingAnimation;
-
-        // 适配窗口大小变化（比如手机旋转）
-        window.onresize = function() {
-            config.screenHeight = window.innerHeight;
-            config.screenWidth = window.innerWidth;
-        };
-    </script>
+    // 示例3：修改单张图片层级
+    // document.getElementById('img3').style.zIndex = 10;
+  </script>
 </body>
 </html>
