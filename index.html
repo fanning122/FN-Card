@@ -41,19 +41,28 @@
     }
     /* 圣诞文字动画样式（最顶层） */
     #christmas-text {
-      position: absolute; /* 固定位置，可根据需求调整top/left等定位值 */
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%); /* 使元素在固定位置居中 */
-      animation: fadeInScaleFadeOut 10s ease-in-out infinite;
-      opacity: 0; /* 初始透明，用于渐隐入效果 */
-      transform-origin: center; /* 缩放原点为中心，保证由小变大时居中 */
-      z-index: 999; /* 强制最顶层，高于所有图片 */
-      font-size: 36px; /* 初始大小，可修改 */
-      color: #FFD700; /* 金色，可修改 */
-      font-weight: bold;
-      white-space: nowrap;
-      user-select: none;
+        /* 1. 绝对定位：基于父容器#image-container，而非屏幕 */
+        position: absolute; 
+        /* 2. 用百分比定位（核心！px会因屏幕分辨率偏差，%基于容器尺寸，跨设备一致） */
+        top: 32%;    /* 示例：容器内顶部2%位置（可改，比如5%） */
+        left: 35%;   /* 示例：容器内左侧2%位置（可改，比如5%） */
+        /* 3. 移除translate偏移（避免叠加偏移导致位置偏差） */
+        transform: none; 
+        /* 4. 缩放原点仍保留，不影响位置，只影响动画缩放 */
+        transform-origin: center; 
+        /* 其他样式（动画、颜色、层级等）完全保留 */
+        animation: fadeInScaleFadeOut 10s ease-in-out infinite;
+        opacity: 0;
+        z-index: 999;
+        font-size: 36px;
+        /* 移动端文字大小适配（只改尺寸，不改位置） */
+        @media (max-width: 768px) {
+          font-size: 24px; /* 仅缩小文字，位置百分比不变 */
+        }
+        color: #FFD700;
+        font-weight: bold;
+        white-space: nowrap;
+        user-select: none;
     }
     
     /* 定义渐隐入+由小变大+渐隐出的关键帧动画 */
@@ -152,8 +161,8 @@
     };
     // 圣诞文字配置项
     const christmasConfig = {
-      left: '35%',    
-      top: '33%',     
+      left: '50%',    
+      top: '50%',     
       fontSize: '36px',
       color: '#FFD700'
     };
@@ -161,8 +170,10 @@
     // ========== 圣诞文字初始化 ==========
     function initChristmasText() {
       const textEl = document.getElementById('christmas-text');
-      textEl.style.left = christmasConfig.left;
-      textEl.style.top = christmasConfig.top;
+      // 删掉以下两行！！！（这是导致位置被覆盖的关键）
+      // textEl.style.left = christmasConfig.left;
+      // textEl.style.top = christmasConfig.top;
+      // 保留其他样式设置（字体、颜色）
       textEl.style.fontSize = christmasConfig.fontSize;
       textEl.style.color = christmasConfig.color;
     }
@@ -268,4 +279,3 @@
   </script>
 </body>
 </html>
-
