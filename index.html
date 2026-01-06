@@ -1,284 +1,1378 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>中央广播电视总台亚太总站香港</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      padding: 20px;
-      background: #f5f5f5;
-      padding-bottom: 80px; /* 给底部控制栏留出空间 */
-    }
-    /* 容器：适配横竖屏，作为图片排版基准 */
-    #image-container {
-      position: relative;
-      width: 100%;
-      height: 80vh;
-      
-      border: 0px dashed #666;
-      background: #fff;
-      overflow: hidden;
-      /* 横竖屏适配 */
-      @media (orientation: landscape) {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      @media (orientation: portrait) {
-        height: 90vh;
-      }
-    }
-    /* 图片样式：仅基础定位，尺寸/位置/层级全由JS配置 */
-    .editable-img {
-      position: absolute;
-      transform-origin: top left; /* 关键：缩放/定位基准为左上角 */
-      user-select: none;
-      /* 移除默认尺寸，完全由JS控制 */
-    }
-    /* 圣诞文字动画样式（最顶层） */
-    #christmas-text {
-        position: absolute; 
-        top: 50%;    /* 示例：容器内顶部2%位置（可改，比如5%） */
-        left: 50%;   /* 示例：容器内左侧2%位置（可改，比如5%） */
-        /* 语法：translate(X偏移, Y偏移) —— 百分比是相对文字自身，px是固定像素（推荐用%） */
-        transform: translate(-50%, -50%) scale(0.5);  
-        transform-origin: center; 
-        /* 其他样式（动画、颜色、层级等）完全保留 */
-        animation: fadeInScaleFadeOut 10s ease-in-out infinite !important;
-        opacity: 0;
-        z-index: 999;
-        /* 图片专属样式 */
-        width: auto;
-        height: auto;
-        max-width: 200px;
-    }
-    
-    /* 定义渐隐入+由小变大+渐隐出的关键帧动画 */
-    @keyframes fadeInScaleFadeOut {
-      0% {
-        opacity: 0; /* 初始状态：完全透明（渐隐入准备） */
-        transform: translate(-50%, -44%) scale(1.6); /* 初始大小：50%（由小变大准备） */
-      }
-      50% {
-        opacity: 1; /* 中间保持：完全显示 */
-        transform: translate(-50%, -42%) scale(1.8); /* 中间保持：原始大小 */
-      }
-      100% {
-        opacity: 0; /* 渐隐出完成：完全透明 */
-        transform: translate(-50%, -36%) scale(2.6); /* 结束大小：保持原始大小 */
-      }
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMG - 多语言名片系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ====== 全局样式 ====== */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+           align-items: center;
+           min-height: 80vh;
+        }
 
-    /* 新增：音乐控制栏样式 */
-    #music-control-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #999;
-      padding: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      z-index: 1000; /* 比圣诞文字更高，确保不被遮挡 */
-    }
-    /* 按钮样式 */
-    .music-btn {
-      padding: 1px 2px;
-      border: none;
-      border-radius: 4px;
-      background: #FFD700;
-      color: #333;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .music-btn:hover {
-      background: #FFA500;
-    }
-    /* 音量滑块样式 */
-    #volume-control {
-      width: 120px;
-      cursor: pointer;
-    }
-  </style>
+        /* ====== 主容器 - 修改：确保子元素居中 ====== */
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 新增：确保所有子元素居中 */
+            gap: 30px;
+            padding: 20px;
+        }
+
+        /* ====== 语言切换按钮区 ====== */
+        .language-section {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 确保内容居中 */
+        }
+
+        .language-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .language-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+
+        /* 语言按钮样式 */
+        .language-btn {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .language-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* ====== 名片内容区 ====== */
+        .card-section {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+            min-height: 800px;
+            display: flex;
+            justify-content: center; /* 新增：居中内容 */
+        }
+
+        /* 名片内容容器 */
+        .card-content {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: none;
+        }
+
+        /* 当前显示的内容 */
+        .card-content.active {
+            position: relative;
+            opacity: 1;
+            transform: translateX(0);
+            animation: slideInRight 0.5s ease forwards;
+        }
+
+        /* 离开的内容 */
+        .card-content.leaving {
+            animation: slideOutLeft 0.5s ease forwards;
+        }
+
+        /* 滑动动画 */
+        @keyframes slideOutLeft {
+            from { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(-100%); 
+                opacity: 0; 
+            }
+        }
+
+        @keyframes slideInRight {
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+        }
+
+        /* ====== 名片原有样式 - 修复图片对齐问题 ====== */
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: white;
+            padding: 0px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            display: block;
+            position: relative;
+            overflow: visible;
+            transition: all 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* stack-container */
+        .stack-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column; /* 改为垂直排列 */
+            background-color: white;
+            border-radius: 8px;
+            min-height: 600px; /* 最小高度保证显示 */
+        }
+        
+        /* 图片包装容器 - 修复：确保图片完全显示 */
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 320px; /* 保持固定高度，确保你的设计不变 */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            clip-path: inset(0 round 12px); /* 这行是魔法 */
+        }
+        
+        /* character-section */
+        .character-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+            gap: 0px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #eee;
+        }
+        
+        /* character-section 内部样式 */
+        .character-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .character-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: #4a6491;
+            text-align: center;
+            margin: 0;
+            line-height: 1.4;
+            padding: 5px 15px;
+            background-color: #f0f5ff;
+            border-radius: 20px;
+        }
+        
+        .character-media {
+            width: 320px;
+            height: 320px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #e8f0fe;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0px solid #e0e7ff;
+        }
+        
+        .character-media img,
+        .character-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 图片基础样式 - 修复：确保图片完全显示 */
+        .stack-image {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-radius: 22px;
+            /* ：确保精确水平居中 */
+        }
+        
+        /* 顶部对齐 */
+        .position-top {
+            top: 0;
+            transform: translateX(-50%); /* 确保这里也有transform */
+        }
+        
+        /* 堆叠图片样式 - 调整层级和透明度 */
+        .image-1 {
+            z-index: 1;
+            width: 100%;
+            opacity: 1;
+        }
+        
+        .image-2 {
+            z-index: 2;
+            width: 100%;
+        }
+        
+        .image-3 {
+            z-index: 3;
+            width: 100%
+        }
+        
+        /* 图片悬停效果 */
+        .stack-image:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+            z-index: 10;
+            opacity: 1;
+        }
+        
+        /* 卡片内容区域 */
+        .card-body {
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+            
+        .section-title {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0f0f0;
+            font-weight: 600;
+        }
+            
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+            
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+        }
+            
+        .contact-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #f0f5ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #4a6491;
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+            
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+            
+        .contact-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+            
+        .contact-value {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+        }
+            
+        .phone-number {
+            display: block;
+            line-height: 1.4;
+        }
+            
+        .contact-value:hover .phone-number {
+            color: #4a6491;
+        }
+            
+        /* 复制提示样式 */
+        .copy-notification {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4a6491;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+            
+        .copy-notification.show {
+            opacity: 1;
+        }
+            
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+            
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f5ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #4a6491;
+            font-size: 18px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+            
+        .social-icon:hover {
+            background-color: #4a6491;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* ====== 音乐播放器区 - 修复：确保居中 ====== */
+        .music-section {
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-top: 10px;
+            display: flex;
+            justify-content: center; /* 新增：确保内容居中 */
+        }
+        
+        .music-player {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%; /* 确保占满容器 */
+        }
+        
+        /* 歌曲信息 */
+        /* 播放控制区域 */
+        .playback-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            margin: 10px 0;
+        }
+        
+        /* 控制按钮通用样式 */
+        .control-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background-color: #f5f7fa;
+            color: #4a6491;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background-color: #4a6491;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .play-pause-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+            background-color: #4a6491;
+            color: white;
+        }
+        
+        .play-pause-btn:hover {
+            background-color: #3a5481;
+        }
+        
+        /* 进度条区域 */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .time-display {
+            font-size: 13px;
+            color: #7f8c8d;
+            min-width: 45px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4a6491;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        .progress-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background-color: #4a6491;
+            border-radius: 50%;
+            display: none;
+        }
+        
+        .progress-bar:hover .progress-handle {
+            display: block;
+        }
+        
+        /* 音量控制区域 */
+        .volume-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .volume-bar {
+            flex: 1;
+            height: 6px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .volume-fill {
+            height: 100%;
+            background-color: #7f8c8d;
+            border-radius: 3px;
+            width: 80%;
+        }
+        
+        /* 底部功能按钮 */
+        .extra-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .extra-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            color: #555;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .extra-btn:hover {
+            background-color: #4a6491;
+            color: white;
+            border-color: #4a6491;
+        }
+        
+        .loop-btn.active {
+            background-color: #4a6491;
+            color: white;
+            border-color: #4a6491;
+        }
+
+        /* ====== 响应式设计 ====== */
+        @media (max-width: 768px) {
+            .main-container {
+                gap: 20px;
+                max-width: 500px;
+            }
+            
+            .language-buttons {
+                max-width: 500px;
+                gap: 5px;
+            }
+            
+            .card-section {
+                min-height: 750px;
+            }
+            
+            .image-wrapper {
+                height: 350px;
+            }
+            
+            .character-section {
+                padding: 20px 15px;
+                gap: 15px;
+            }
+            
+            .character-name {
+                font-size: 22px;
+            }
+            
+            .character-media {
+                width: 190px;
+                height: 190px;
+            }
+            
+            .control-btn {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .play-pause-btn {
+                width: 55px;
+                height: 55px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-container {
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .language-buttons {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+            
+            .card-section {
+                min-height: 700px;
+            }
+            
+            .container,
+            .music-section {
+                max-width: 300px;
+                padding: 15px;
+            }
+            
+            .image-wrapper {
+                height: 230px;
+            }
+            
+            .character-section {
+                padding: 15px 10px;
+                gap: 12px;
+            }
+            
+            .character-name {
+                font-size: 22px;
+            }
+            
+            .character-title {
+                font-size: 18px;
+            }
+            
+            .character-media {
+                width: 190px;
+                height: 190px;
+            }
+            
+            .language-btn {
+                aspect-ratio: 2/1;
+                height: 80px;
+                font-size: 15px;
+            }
+            
+            .song-title {
+                font-size: 16px;
+            }
+            
+            .playback-controls {
+                gap: 15px;
+            }
+            
+            .control-btn {
+                width: 38px;
+                height: 38px;
+            }
+            
+            .play-pause-btn {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .extra-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .extra-btn {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .language-btn {
+                height: 70px;
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- 图片容器 -->
-  <div id="image-container">
-    <!-- 6张图片：仅保留基础结构，配置全在JS里 -->
-    <img src="Myself.png" class="editable-img" id="img2" alt="图片2">
-    <img src="Planing background.png" class="editable-img" id="img3" alt="图片3">
-    <img src="MyCardChinese002.png" class="editable-img" id="img4" alt="图片4">
-    <img src="MyCardEnglish002.png" class="editable-img" id="img5" alt="图片5">
-    <img src="ChineseSenior.png" class="editable-img" id="img6" alt="图片6">
-    <img src="EnglishSenior.png" class="editable-img" id="img7" alt="图片7">
-    <img src="Button.png" class="editable-img" id="img1" alt="图片1">
+    <div class="main-container">
+        <!-- ====== 语言切换区 ====== -->
+        <div class="language-section">
+            <h3 class="language-title" data-key="language_title">选择语言 / Select Language</h3>
+            <div class="language-buttons">
+                <button class="language-btn" data-lang="zh" data-key="btn_zh">中文</button>
+                <button class="language-btn" data-lang="en" data-key="btn_en">English</button>
+                <button class="language-btn" data-lang="ja" data-key="btn_ja">日本語</button>
+                <button class="language-btn" data-lang="ko" data-key="btn_ko">한국어</button>
+                <button class="language-btn" data-lang="id" data-key="btn_id">Indonesia</button>
+            </div>
+        </div>
 
-    <img 
-      id="christmas-text" 
-      src="MerryChristmas.png"  <!-- 替换成你的图片路径（本地/网络都可） -->
-      <!--alt="Christmas subtitle" --> 
-      <!--style="width: auto; height: auto; max-width: 200px;"   可选：限制图片最大宽度，避免溢出 -->
-  </div>
+        <!-- ====== 名片内容区 ====== -->
+        <div class="card-section">
+            <!-- 内容将通过JS动态生成 -->
+        </div>
 
-  <!-- 音频元素 -->
-  <audio id="background-music" loop>
-    <source src="JingleBells.mp3" type="audio/mpeg">
-    您的浏览器不支持音频播放
-  </audio>
-
-  <!-- 新增：音乐控制按钮组 -->
-  <div id="music-control-bar">
-    <button class="music-btn" id="play-pause-btn">播放</button>
-    <button class="music-btn" id="stop-btn">停止</button>
-    <div>
-      <label for="volume-control" style="color: #fff; font-size: 14px;">音量：</label>
-      <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1">
+        <!-- ====== 音乐播放器区 ====== -->
+        <div class="music-section">
+            <div class="music-player">
+                <audio id="audioPlayer" src="happynewyear.mp4"></audio>
+                
+                <div class="playback-controls">
+                    <button class="control-btn" id="prevBtn" title="上一曲" disabled>
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    
+                    <button class="control-btn play-pause-btn" id="playPauseBtn" title="播放/暂停">
+                        <i class="fas fa-play" id="playIcon"></i>
+                    </button>
+                    
+                    <button class="control-btn" id="nextBtn" title="下一曲" disabled>
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+                
+                <!-- 进度条 -->
+                <div class="progress-container">
+                    <span class="time-display" id="currentTime">0:00</span>
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill"></div>
+                        <div class="progress-handle" id="progressHandle"></div>
+                    </div>
+                    <span class="time-display" id="duration">0:00</span>
+                </div>
+                
+                <!-- 音量控制 -->
+                <div class="volume-controls">
+                    <i class="fas fa-volume-down" style="color: #7f8c8d;"></i>
+                    <div class="volume-bar" id="volumeBar">
+                        <div class="volume-fill" id="volumeFill"></div>
+                    </div>
+                    <i class="fas fa-volume-up" style="color: #7f8c8d;"></i>
+                </div>
+                
+                <!-- 额外控制 -->
+                <div class="extra-controls">
+                    <button class="extra-btn loop-btn" id="loopBtn" title="循环模式">
+                        <i class="fas fa-redo"></i> 循环
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // ========== 核心配置区：所有参数可直接修改 ==========
-    const container = document.getElementById('image-container');
-    // 图片配置项：每张图的层级(zIndex)可自定义，其他由逻辑自动计算
-    const imgConfigs = {
-      img1: { zIndex: 1 }, // 层级数字越大，越在顶层
-      img2: { zIndex: 2 },
-      img3: { zIndex: 3 },
-      img4: { zIndex: 4 },
-      img5: { zIndex: 5 },
-      img6: { zIndex: 6 },
-      img7: { zIndex: 7 }
-    };
-
-    // ========== 圣诞文字初始化 ==========
-    function initChristmasText() {
-      const textEl = document.getElementById('christmas-text');
-      // 确保图片加载完成后再应用布局
-      textEl.onload = function() {
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-        const originalWidth = textEl.naturalWidth;
-        const originalHeight = textEl.naturalHeight;
-
-        // 计算适配容器的缩放比例
-        const scaleX = containerWidth / originalWidth;
-        const scaleY = containerHeight / originalHeight;
-        const fitScale = Math.min(scaleX, scaleY, 1);
-
-        // 应用缩放（不影响动画的scale）
-        textEl.style.width = `${originalWidth * fitScale}px`;
-        textEl.style.height = `${originalHeight * fitScale}px`;
-      };
-      // 如果图片已加载完成，手动触发onload
-      if (textEl.complete) textEl.onload();
-    }
-
-    // ========== 核心逻辑：自动适配+左上角基准居中 ==========
-    function initImages() {
-      const imgElements = document.querySelectorAll('.editable-img');
-      let loadedCount = 0;
-
-      imgElements.forEach(img => {
-        img.onload = function() {
-          loadedCount++;
-          if (loadedCount === imgElements.length) {
-            layoutImages(imgElements);
-          }
+    <script>
+        // ===================================================================
+        // 多语言系统核心配置
+        // ===================================================================
+        const languageData = {
+            zh: {
+                texts: {
+                    language_title: "选择语言",
+                    btn_zh: "中文",
+                    btn_en: "英文",
+                    btn_ja: "日文",
+                    btn_ko: "韩文",
+                    btn_id: "印尼文",
+                    name: "李林",
+                    title: "雅加达站记者",
+                    contact_title: "联系信息",
+                    phone_label: "电话",
+                    email_label: "邮箱",
+                    location_label: "地址",
+                    phone1: "+86-15202060537",
+                    phone2: "+62 082114641730",
+                    email1: "lilin.37@163.com",
+                    email2: "lindia1230@gmail.com",
+                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
+                    social_title: "联系我",
+                    wechat_label: "微信"
+                },
+                images: {
+                    character_img: "horse001.jpg",
+                    stack_img1: "dbc001.png",
+                    stack_img2: "dbc002.png",
+                    stack_img3: "dbc003.png"
+                }
+            },
+            en: {
+                texts: {
+                    language_title: "Select Language",
+                    btn_zh: "Chinese",
+                    btn_en: "English",
+                    btn_ja: "Japanese",
+                    btn_ko: "Korean",
+                    btn_id: "Indonesia",
+                    name: "LI LIN",
+                    title: "Jakarta Station Reporter",
+                    contact_title: "Contact Information",
+                    phone_label: "Phone",
+                    email_label: "Email",
+                    location_label: "Location",
+                    phone1: "+86-15202060537",
+                    phone2: "+62 082114641730",
+                    email1: "lilin.37@163.com",
+                    email2: "lindia1230@gmail.com",
+                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
+                    social_title: "Connect With Me",
+                    wechat_label: "WeChat"
+                },
+                images: {
+                    character_img: "horse001.jpg",
+                    stack_img1: "dbc001.png",
+                    stack_img2: "dbc002.png",
+                    stack_img3: "dbc003.png"
+                }
+            },
+            ja: {
+                texts: {
+                    language_title: "言語を選択",
+                    btn_zh: "中国語",
+                    btn_en: "英語",
+                    btn_ja: "日本語",
+                    btn_ko: "韓国語",
+                    btn_id: "インドネシア語",
+                    name: "李林",
+                    title: "ジャカルタ支局記者",
+                    contact_title: "連絡先情報",
+                    phone_label: "電話",
+                    email_label: "メール",
+                    location_label: "所在地",
+                    phone1: "+86-15202060537",
+                    phone2: "+62 082114641730",
+                    email1: "lilin.37@163.com",
+                    email2: "lindia1230@gmail.com",
+                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
+                    social_title: "連絡する",
+                    wechat_label: "WeChat"
+                },
+                images: {
+                    character_img: "horse001.jpg",
+                    stack_img1: "dbc001.png",
+                    stack_img2: "dbc002.png",
+                    stack_img3: "dbc003.png"
+                }
+            },
+            ko: {
+                texts: {
+                    language_title: "언어 선택",
+                    btn_zh: "중국어",
+                    btn_en: "영어",
+                    btn_ja: "일본어",
+                    btn_ko: "한국어",
+                    btn_id: "인도네시아어",
+                    name: "리린",
+                    title: "자카르타 특파원",
+                    contact_title: "연락처 정보",
+                    phone_label: "전화",
+                    email_label: "이메일",
+                    location_label: "위치",
+                    phone1: "+86-15202060537",
+                    phone2: "+62 082114641730",
+                    email1: "lilin.37@163.com",
+                    email2: "lindia1230@gmail.com",
+                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
+                    social_title: "연락하기",
+                    wechat_label: "위챗"
+                },
+                images: {
+                    character_img: "horse001.jpg",
+                    stack_img1: "dbc001.png",
+                    stack_img2: "dbc002.png",
+                    stack_img3: "dbc003.png"
+                }
+            },
+            id: {
+                texts: {
+                    language_title: "Pilih Bahasa",
+                    btn_zh: "Cina",
+                    btn_en: "Inggris",
+                    btn_ja: "Jepang",
+                    btn_ko: "Korea",
+                    btn_id: "Indonesia",
+                    name: "LI LIN",
+                    title: "Reporter Stasiun Jakarta",
+                    contact_title: "Informasi Kontak",
+                    phone_label: "Telepon",
+                    email_label: "Email",
+                    location_label: "Lokasi",
+                    phone1: "+86-15202060537",
+                    phone2: "+62 082114641730",
+                    email1: "lilin.37@163.com",
+                    email2: "lindia1230@gmail.com",
+                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
+                    social_title: "Hubungi Saya",
+                    wechat_label: "WeChat"
+                },
+                images: {
+                    character_img: "horse001.jpg",
+                    stack_img1: "dbc001.png",
+                    stack_img2: "dbc002.png",
+                    stack_img3: "dbc003.png"
+                }
+            }
         };
-        if (img.complete) img.onload();
-      });
-    }
 
-    function layoutImages(imgElements) {
-      const containerWidth = container.clientWidth;
-      const containerHeight = container.clientHeight;
+        const imageConfig = {
+            'character_img': '.character-media img',
+            'stack_img1': '.image-3',
+            'stack_img2': '.image-2',
+            'stack_img3': '.image-1'
+        };
 
-      imgElements.forEach(img => {
-        const config = imgConfigs[img.id];
-        const originalWidth = img.naturalWidth;
-        const originalHeight = img.naturalHeight;
+        // ===================================================================
+        // 全局变量
+        // ===================================================================
+        let currentLang = 'zh';
+        let isAnimating = false;
 
-        const scaleX = containerWidth / originalWidth;
-        const scaleY = containerHeight / originalHeight;
-        const fitScale = Math.min(scaleX, scaleY, 1);
+        // ===================================================================
+        // 核心功能函数 - 修复中文切换问题
+        // ===================================================================
 
-        img.style.width = `${originalWidth * fitScale}px`;
-        img.style.height = `${originalHeight * fitScale}px`;
-        const finalWidth = img.offsetWidth;
-        const finalHeight = img.offsetHeight;
+        /**
+         * 初始化函数
+         */
+        function init() {
+            const savedLang = localStorage.getItem('preferredLang');
+            if (savedLang && languageData[savedLang]) {
+                currentLang = savedLang;
+            }
+            
+            generateAllLanguageContainers(); // 生成所有语言容器
+            switchLanguage(currentLang, false); // 首次加载不播放动画
+            bindLanguageButtons();
+            initMusicPlayer();
+            
+            console.log('系统初始化完成，当前语言:', currentLang);
+        }
 
-        const left = (containerWidth - finalWidth) / 2;
-        const top = (containerHeight - finalHeight) / 2;
+        /**
+         * 生成所有语言的内容容器（修复版）
+         */
+        function generateAllLanguageContainers() {
+            const cardSection = document.querySelector('.card-section');
+            cardSection.innerHTML = ''; // 清空所有内容
+            
+            // 为每种语言创建内容容器
+            Object.keys(languageData).forEach(lang => {
+                const container = document.createElement('div');
+                container.className = 'card-content';
+                container.id = `card-content-${lang}`;
+                container.innerHTML = generateCardHTML(lang);
+                cardSection.appendChild(container);
+                
+                // 初始化内容（但不显示）
+                const data = languageData[lang];
+                updateContainerContent(container, data, lang);
+            });
+        }
 
-        img.style.left = `${left}px`;
-        img.style.top = `${top}px`;
-        img.style.zIndex = config.zIndex;
-      });
-    }
+        /**
+         * 生成名片HTML结构
+         */
+        function generateCardHTML(lang) {
+            // 返回基本结构，具体内容通过updateContainerContent填充
+            return `
+                <div class="container">
+                    <div class="stack-container">
+                        <div class="image-wrapper">
+                            <img src="" alt="CMG Logo" class="stack-image image-3 position-top" data-img-key="stack_img1">
+                            <img src="" alt="Mathematical Expression" class="stack-image image-2 position-top" data-img-key="stack_img2">
+                            <img src="" alt="Additional Image" class="stack-image image-1 position-top" data-img-key="stack_img3">
+                        </div>
+                        
+                        <div class="character-section">
+                            <h2 class="character-name" data-key="name"></h2>
+                            <p class="character-title" data-key="title"></p>
+                            <div class="character-media">
+                                <img src="" alt="Character Image" data-img-key="character_img">
+                            </div>
+                        </div>
+                    </div>
 
-    // ========== 窗口适配 ==========
-    window.addEventListener('resize', () => {
-      initImages();
-    });
+                    <div class="card-body">
+                        <h3 class="section-title" data-key="contact_title"></h3>
+                          
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <span class="contact-label" data-key="phone_label"></span>
+                                    <span class="contact-value">
+                                        <span class="phone-number" data-key="phone1"></span>
+                                        <span class="phone-number" data-key="phone2"></span>
+                                    </span>
+                                </div>
+                            </div>
+                              
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <span class="contact-label" data-key="email_label"></span>
+                                    <span class="contact-value" data-key="email1"></span>
+                                    <span class="contact-value" data-key="email2"></span>
+                                </div>
+                            </div>
+                              
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <span class="contact-label" data-key="location_label"></span>
+                                    <span class="contact-value" data-key="location"></span>
+                                </div>
+                            </div>
+                        </div>
+                          
+                        <h3 class="section-title" data-key="social_title"></h3>
+                          
+                        <div class="social-links">
+                            <a href="#" class="social-icon" data-key="wechat_label">
+                                <i class="fab fa-weixin"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
-    // ========== 音乐控制核心逻辑（新增+优化） ==========
-    const music = document.getElementById('background-music');
-    const playPauseBtn = document.getElementById('play-pause-btn');
-    const stopBtn = document.getElementById('stop-btn');
-    const volumeControl = document.getElementById('volume-control');
+        /**
+         * 更新容器内容
+         */
+        function updateContainerContent(container, data, lang) {
+            // 更新文本
+            container.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (data.texts[key] !== undefined) {
+                    if (element.tagName === 'A' && element.hasAttribute('title')) {
+                        element.setAttribute('title', data.texts[key]);
+                    } else if (element.hasAttribute('placeholder')) {
+                        element.setAttribute('placeholder', data.texts[key]);
+                    } else {
+                        element.textContent = data.texts[key];
+                    }
+                }
+            });
+            
+            // 更新图片
+            container.querySelectorAll('[data-img-key]').forEach(imgElement => {
+                const key = imgElement.getAttribute('data-img-key');
+                if (data.images[key] && imgElement.tagName === 'IMG') {
+                    imgElement.setAttribute('src', data.images[key]);
+                }
+            });
+        }
 
-    // 初始化音乐（保留原有自动播放逻辑）
-    function initMusic() {
-      // 自动播放尝试
-      music.play().catch(error => {
-        console.log('自动播放失败，点击"播放"按钮手动播放:', error);
-      });
-      // 音量初始化（默认100%）
-      music.volume = volumeControl.value;
-    }
+        /**
+         * 切换语言（修复中文切换问题）
+         */
+        function switchLanguage(lang, playAnimation = true) {
+            if (!languageData[lang]) {
+                console.error(`语言 ${lang} 未定义`);
+                return;
+            }
+            
+            if (isAnimating && playAnimation) {
+                return;
+            }
+            
+            if (lang === currentLang && playAnimation) {
+                console.log(`已经是 ${lang} 语言`);
+                return;
+            }
+            
+            console.log(`切换语言: ${currentLang} -> ${lang}`);
+            
+            const oldLang = currentLang;
+            currentLang = lang;
+            localStorage.setItem('preferredLang', lang);
+            
+            if (playAnimation) {
+                animateLanguageSwitch(oldLang, lang);
+            } else {
+                // 直接显示目标语言，隐藏其他语言
+                showLanguage(lang);
+                updateButtonTexts(languageData[lang].texts);
+                bindCopyFunctions();
+            }
+        }
 
-    // 播放/暂停切换
-    playPauseBtn.addEventListener('click', () => {
-      if (music.paused) {
-        music.play();
-        playPauseBtn.textContent = '暂停';
-      } else {
-        music.pause();
-        playPauseBtn.textContent = '播放';
-      }
-    });
+        /**
+         * 显示指定语言，隐藏其他语言
+         */
+        function showLanguage(lang) {
+            document.querySelectorAll('.card-content').forEach(container => {
+                container.style.display = 'none';
+                container.classList.remove('active', 'leaving');
+            });
+            
+            const targetContainer = document.getElementById(`card-content-${lang}`);
+            if (targetContainer) {
+                targetContainer.style.display = 'block';
+                targetContainer.classList.add('active');
+            }
+        }
 
-    // 停止播放（重置到开头并暂停）
-    stopBtn.addEventListener('click', () => {
-      music.pause();
-      music.currentTime = 0; // 重置播放进度到开头
-      playPauseBtn.textContent = '播放';
-    });
+        /**
+         * 执行语言切换动画
+         */
+        function animateLanguageSwitch(oldLang, newLang) {
+            isAnimating = true;
+            
+            const oldContainer = document.getElementById(`card-content-${oldLang}`);
+            const newContainer = document.getElementById(`card-content-${newLang}`);
+            
+            if (!oldContainer || !newContainer) {
+                showLanguage(newLang);
+                isAnimating = false;
+                return;
+            }
+            
+            // 准备新容器
+            newContainer.style.display = 'block';
+            newContainer.classList.remove('active');
+            
+            // 开始动画
+            oldContainer.classList.remove('active');
+            oldContainer.classList.add('leaving');
+            
+            setTimeout(() => {
+                oldContainer.style.display = 'none';
+                oldContainer.classList.remove('leaving');
+                
+                // 更新按钮文字
+                updateButtonTexts(languageData[newLang].texts);
+                bindCopyFunctions();
+                
+                // 显示新容器
+                setTimeout(() => {
+                    newContainer.classList.add('active');
+                    isAnimating = false;
+                }, 10);
+            }, 500);
+        }
 
-    // 音量调节
-    volumeControl.addEventListener('input', () => {
-      music.volume = volumeControl.value;
-    });
+        /**
+         * 更新语言按钮文字
+         */
+        function updateButtonTexts(texts) {
+            document.querySelectorAll('.language-btn').forEach(button => {
+                const lang = button.getAttribute('data-lang');
+                const key = `btn_${lang}`;
+                if (texts[key]) {
+                    button.textContent = texts[key];
+                }
+            });
+            
+            // 更新语言标题
+            const title = document.querySelector('.language-title');
+            if (title && texts['language_title']) {
+                title.textContent = texts['language_title'];
+            }
+        }
 
-    // ========== 初始化执行 ==========
-    initImages();
-    initChristmasText();
-    initMusic();
+        /**
+         * 绑定语言按钮事件
+         */
+        function bindLanguageButtons() {
+            // 使用事件委托，避免重复绑定
+            document.querySelector('.language-buttons').addEventListener('click', function(e) {
+                if (e.target.classList.contains('language-btn')) {
+                    const lang = e.target.getAttribute('data-lang');
+                    switchLanguage(lang, true);
+                }
+            });
+        }
 
-    // ========== 手动修改示例 ==========
-    // document.getElementById('img1').style.left = '100px';
-    // document.getElementById('img1').style.top = '50px';
-    // document.getElementById('img2').style.width = '300px';
-    // document.getElementById('img2').style.height = '200px';
-    // document.getElementById('img3').style.zIndex = 10;
-  </script>
+        /**
+         * 绑定复制功能
+         */
+        function bindCopyFunctions() {
+            document.querySelectorAll('.contact-item').forEach(item => {
+                item.onclick = function() {
+                    const contactValues = this.querySelectorAll('.contact-value, .phone-number');
+                    let textToCopy = '';
+                    
+                    contactValues.forEach((element, index) => {
+                        if (element.textContent.trim()) {
+                            textToCopy += element.textContent.trim();
+                            if (index < contactValues.length - 1) {
+                                textToCopy += '\n';
+                            }
+                        }
+                    });
+                    
+                    if (!textToCopy) return;
+                    
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showCopyNotification(this);
+                    }).catch(err => {
+                        console.error('复制失败:', err);
+                        fallbackCopyText(textToCopy, this);
+                    });
+                };
+            });
+        }
+
+        /**
+         * 显示复制提示
+         */
+        function showCopyNotification(parentElement) {
+            const oldNotification = parentElement.querySelector('.copy-notification');
+            if (oldNotification) oldNotification.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.textContent = '已复制!';
+            
+            parentElement.style.position = 'relative';
+            parentElement.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode === parentElement) {
+                        parentElement.removeChild(notification);
+                    }
+                }, 300);
+            }, 1500);
+        }
+
+        /**
+         * 老式复制方法
+         */
+        function fallbackCopyText(text, parentElement) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) showCopyNotification(parentElement);
+            } catch (err) {
+                console.error('老式复制方法失败:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        /**
+         * 初始化音乐播放器
+         */
+        function initMusicPlayer() {
+            const audio = document.getElementById('audioPlayer');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const playIcon = document.getElementById('playIcon');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            const volumeBar = document.getElementById('volumeBar');
+            const volumeFill = document.getElementById('volumeFill');
+            const loopBtn = document.getElementById('loopBtn');
+            
+            playPauseBtn.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play();
+                    playIcon.classList.remove('fa-play');
+                    playIcon.classList.add('fa-pause');
+                    playPauseBtn.title = '暂停';
+                } else {
+                    audio.pause();
+                    playIcon.classList.remove('fa-pause');
+                    playIcon.classList.add('fa-play');
+                    playPauseBtn.title = '播放';
+                }
+            });
+            
+            audio.addEventListener('timeupdate', function() {
+                const currentTime = audio.currentTime;
+                const duration = audio.duration;
+                
+                if (duration && !isNaN(duration)) {
+                    const progressPercent = (currentTime / duration) * 100;
+                    progressFill.style.width = `${progressPercent}%`;
+                    
+                    currentTimeEl.textContent = formatTime(currentTime);
+                    durationEl.textContent = formatTime(duration);
+                }
+            });
+            
+            progressBar.addEventListener('click', function(e) {
+                const rect = progressBar.getBoundingClientRect();
+                const clickPosition = (e.clientX - rect.left) / rect.width;
+                audio.currentTime = clickPosition * audio.duration;
+            });
+            
+            volumeBar.addEventListener('click', function(e) {
+                const rect = volumeBar.getBoundingClientRect();
+                const clickPosition = (e.clientX - rect.left) / rect.width;
+                const volume = Math.max(0, Math.min(1, clickPosition));
+                audio.volume = volume;
+                volumeFill.style.width = `${volume * 100}%`;
+            });
+            
+            loopBtn.addEventListener('click', function() {
+                if (audio.loop) {
+                    audio.loop = false;
+                    loopBtn.classList.remove('active');
+                    loopBtn.title = '单曲循环（关）';
+                } else {
+                    audio.loop = true;
+                    loopBtn.classList.add('active');
+                    loopBtn.title = '单曲循环（开）';
+                }
+            });
+            
+            audio.addEventListener('loadedmetadata', function() {
+                if (audio.duration && !isNaN(audio.duration)) {
+                    durationEl.textContent = formatTime(audio.duration);
+                }
+            });
+            
+            audio.addEventListener('ended', function() {
+                if (!audio.loop) {
+                    playIcon.classList.remove('fa-pause');
+                    playIcon.classList.add('fa-play');
+                    playPauseBtn.title = '播放';
+                }
+            });
+            
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+            
+            volumeFill.style.width = `${audio.volume * 100}%`;
+        }
+
+        // ===================================================================
+        // 页面加载完成后初始化
+        // ===================================================================
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
