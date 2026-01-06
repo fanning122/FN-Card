@@ -14,8 +14,8 @@
             background-color: #f5f5f5;
             display: flex;
             justify-content: center;
-           align-items: center;
-           min-height: 80vh;
+            align-items: center;
+            min-height: 80vh;
         }
 
         /* ====== 主容器 - 修改：确保子元素居中 ====== */
@@ -35,7 +35,9 @@
             max-width: 500px;
             display: flex;
             flex-direction: column;
-            align-items: center; /* 确保内容居中 */
+            align-items: center; /* 确保内容水平居中 */
+            margin: 0 auto; /* 使容器本身在其父元素中水平居中 */
+            /* 移除 justify-content: center，因为已经是 column 布局且内容不多 */
         }
 
         .language-title {
@@ -47,9 +49,10 @@
 
         .language-buttons {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(2, 80px);
             gap: 10px;
-            width: 100%;
+            width: fit-content; /* 自适应内容宽度 */
+            margin: 0 auto; /* 水平居中 */
         }
 
         /* 语言按钮样式 */
@@ -244,7 +247,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             border-radius: 22px;
-            /* ：确保精确水平居中 */
+            /* 修改：确保精确水平居中（修正注释格式） */
         }
         
         /* 顶部对齐 */
@@ -713,9 +716,6 @@
             <div class="language-buttons">
                 <button class="language-btn" data-lang="zh" data-key="btn_zh">中文</button>
                 <button class="language-btn" data-lang="en" data-key="btn_en">English</button>
-                <button class="language-btn" data-lang="ja" data-key="btn_ja">日本語</button>
-                <button class="language-btn" data-lang="ko" data-key="btn_ko">한국어</button>
-                <button class="language-btn" data-lang="id" data-key="btn_id">Indonesia</button>
             </div>
         </div>
 
@@ -785,17 +785,16 @@
                     btn_ja: "日文",
                     btn_ko: "韩文",
                     btn_id: "印尼文",
-                    name: "李林",
-                    title: "雅加达站记者",
+                    name: "范宁",
+                    title: "高级工程师",
                     contact_title: "联系信息",
                     phone_label: "电话",
                     email_label: "邮箱",
                     location_label: "地址",
-                    phone1: "+86-15202060537",
-                    phone2: "+62 082114641730",
-                    email1: "lilin.37@163.com",
-                    email2: "lindia1230@gmail.com",
-                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
+                    phone1: "+852 3460 5738",
+                    phone2: "+852 69928257",
+                    email1: "fanning@cctv.com",
+                    location: "香港九龙红磡道18号座西翼11楼",
                     social_title: "联系我",
                     wechat_label: "微信"
                 },
@@ -814,17 +813,16 @@
                     btn_ja: "Japanese",
                     btn_ko: "Korean",
                     btn_id: "Indonesia",
-                    name: "LI LIN",
-                    title: "Jakarta Station Reporter",
+                    name: "FAN NING",
+                    title: "Senior Engineer",
                     contact_title: "Contact Information",
                     phone_label: "Phone",
                     email_label: "Email",
                     location_label: "Location",
-                    phone1: "+86-15202060537",
-                    phone2: "+62 082114641730",
-                    email1: "lilin.37@163.com",
-                    email2: "lindia1230@gmail.com",
-                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
+                    phone1: "+852 3460 5738",
+                    phone2: "+852 69928257",
+                    email1: "fanning@cctv.com",
+                    location: "11/F, Tower A (West), No. 18 Hung Luen Road, Kowloon, Hong Kong",
                     social_title: "Connect With Me",
                     wechat_label: "WeChat"
                 },
@@ -835,93 +833,6 @@
                     stack_img3: "dbc003.png"
                 }
             },
-            ja: {
-                texts: {
-                    language_title: "言語を選択",
-                    btn_zh: "中国語",
-                    btn_en: "英語",
-                    btn_ja: "日本語",
-                    btn_ko: "韓国語",
-                    btn_id: "インドネシア語",
-                    name: "李林",
-                    title: "ジャカルタ支局記者",
-                    contact_title: "連絡先情報",
-                    phone_label: "電話",
-                    email_label: "メール",
-                    location_label: "所在地",
-                    phone1: "+86-15202060537",
-                    phone2: "+62 082114641730",
-                    email1: "lilin.37@163.com",
-                    email2: "lindia1230@gmail.com",
-                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
-                    social_title: "連絡する",
-                    wechat_label: "WeChat"
-                },
-                images: {
-                    character_img: "horse001.jpg",
-                    stack_img1: "dbc001.png",
-                    stack_img2: "dbc002.png",
-                    stack_img3: "dbc003.png"
-                }
-            },
-            ko: {
-                texts: {
-                    language_title: "언어 선택",
-                    btn_zh: "중국어",
-                    btn_en: "영어",
-                    btn_ja: "일본어",
-                    btn_ko: "한국어",
-                    btn_id: "인도네시아어",
-                    name: "리린",
-                    title: "자카르타 특파원",
-                    contact_title: "연락처 정보",
-                    phone_label: "전화",
-                    email_label: "이메일",
-                    location_label: "위치",
-                    phone1: "+86-15202060537",
-                    phone2: "+62 082114641730",
-                    email1: "lilin.37@163.com",
-                    email2: "lindia1230@gmail.com",
-                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
-                    social_title: "연락하기",
-                    wechat_label: "위챗"
-                },
-                images: {
-                    character_img: "horse001.jpg",
-                    stack_img1: "dbc001.png",
-                    stack_img2: "dbc002.png",
-                    stack_img3: "dbc003.png"
-                }
-            },
-            id: {
-                texts: {
-                    language_title: "Pilih Bahasa",
-                    btn_zh: "Cina",
-                    btn_en: "Inggris",
-                    btn_ja: "Jepang",
-                    btn_ko: "Korea",
-                    btn_id: "Indonesia",
-                    name: "LI LIN",
-                    title: "Reporter Stasiun Jakarta",
-                    contact_title: "Informasi Kontak",
-                    phone_label: "Telepon",
-                    email_label: "Email",
-                    location_label: "Lokasi",
-                    phone1: "+86-15202060537",
-                    phone2: "+62 082114641730",
-                    email1: "lilin.37@163.com",
-                    email2: "lindia1230@gmail.com",
-                    location: "6C, South Hills,Jl. Denpasar Raya No.Kav. 5-7, Karet Kuningan, Setiabudi, Jakarta, Indonesia 12950",
-                    social_title: "Hubungi Saya",
-                    wechat_label: "WeChat"
-                },
-                images: {
-                    character_img: "horse001.jpg",
-                    stack_img1: "dbc001.png",
-                    stack_img2: "dbc002.png",
-                    stack_img3: "dbc003.png"
-                }
-            }
         };
 
         const imageConfig = {
@@ -1205,6 +1116,12 @@
          * 绑定复制功能
          */
         function bindCopyFunctions() {
+            // 先移除所有已有的点击事件，防止重复绑定
+            document.querySelectorAll('.contact-item').forEach(item => {
+                item.onclick = null;
+            });
+            
+            // 重新绑定点击事件
             document.querySelectorAll('.contact-item').forEach(item => {
                 item.onclick = function() {
                     const contactValues = this.querySelectorAll('.contact-value, .phone-number');
