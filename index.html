@@ -92,6 +92,7 @@
             min-height: 800px;
             display: block;
             margin-bottom: 2px; /* 添加与播放器的间距 */
+            padding: 15px;
         }
 
         /* 名片内容容器 */
@@ -461,7 +462,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            padding: 25px;
+            padding: 5px;
         }
         
         .video-container {
@@ -647,7 +648,7 @@
         
         @media (max-width: 480px) {
             body {
-                padding: 15px;
+                padding: 5px;
             }
             
             .main-container {
@@ -656,7 +657,7 @@
             }
             
             .language-buttons {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
                 max-width: 300px;
             }
             
@@ -665,12 +666,12 @@
             }
             
             .container {
-                max-width: 300px;
+                max-width: 800px;
                 padding: 15px;
             }
             
             .image-wrapper {
-                height: 230px;
+                height: 240px;
             }
             
             .character-section {
@@ -692,8 +693,8 @@
             }
             
             .language-btn {
-                aspect-ratio: 2/1;
-                height: 80px;
+                aspect-ratio: 3/1;
+                height: 30px;
                 font-size: 15px;
             }
             
