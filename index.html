@@ -28,6 +28,7 @@
         .main-container {
             width: 100%;
             max-width: 500px; /* 统一宽度为500px */
+            height: 1000px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -89,7 +90,7 @@
             max-width: 500px; /* 统一宽度 */
             position: relative;
             overflow: hidden;
-            min-height: 800px;
+            min-height: 880px;
             display: block;
             margin-bottom: 2px; /* 添加与播放器的间距 */
         }
@@ -148,9 +149,9 @@
         .container {
             max-width: 500px;
             width: 100%;
-            height: 1150px;
+            height: 1000px;
             background-color: rgba(30, 30, 46, 0.9); /* 深色半透明背景 */
-            padding: 0px;
+            padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             margin: 0 auto;
@@ -462,14 +463,14 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            padding: 25px;
+            padding: 5px;
         }
         
         .video-container {
             position: relative;
             border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 0px;
             background-color: #000;
         }
         
@@ -609,11 +610,11 @@
             }
             
             .card-section {
-                min-height: 750px;
+                min-height:880px;
             }
             
             .image-wrapper {
-                height: 320px;
+                height: 300px;
             }
             
             .character-section {
@@ -662,12 +663,12 @@
             }
             
             .card-section {
-                min-height: 700px;
+                min-height: 900px;
             }
             
             .container {
                 max-width: 300px;
-                height: 990px;
+                height: 890px;
                 padding: 15px;
             }
             
@@ -705,7 +706,7 @@
             }
             
             .player {
-                padding: 20px;
+                padding: 5px;
             }
             
             .video-player-container h1 {
@@ -750,7 +751,7 @@
                 <div class="video-container">
                     <video id="videoPlayer">
                         <!-- 硬编码视频源 -->
-                        <source src="https://drive.google.com/file/d/1Ge_zRW9giUHHHib-RzqZHOp29R54JC-C/view?usp=sharing" type="video/mp4">
+                        <source src="cmgchinese006.mp4" type="video/mp4">
                         您的浏览器不支持视频播放。
                     </video>
                 </div>
@@ -1231,12 +1232,12 @@
                 const videoFiles = [
                     {
                         name: 'cmgchinese005.mp4',
-                        url: 'https://drive.google.com/file/d/1Ge_zRW9giUHHHib-RzqZHOp29R54JC-C/view?usp=sharing',
+                        url: 'cmgchinese006.mp4',
                         type: 'video/mp4'
                     },
                     {
                         name: 'cmgenglish005.mp4',
-                        url: 'https://drive.google.com/file/d/1HskzDQxFuVL69M_bUJlsWkQWizNrbEtv/view?usp=sharing',
+                        url: 'cmgchinese006.mp4',
                         type: 'video/mp4'
                     }
                 ];
